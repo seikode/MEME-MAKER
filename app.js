@@ -2,10 +2,15 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const lineWidth = document.getElementById("line-width");
 const color = document.getElementById("color");
+const colorOptions = Array.from(
+  document.getElementsByClassName("color-option")
+);
+const modeBtn = document.getElementById("mode-btn");
 canvas.width = 500;
 canvas.height = 500;
 ctx.lineWidth = lineWidth.value;
 let isPainting = false;
+let isFilling = false;
 
 function onMove(event) {
   if (isPainting) {
@@ -16,7 +21,7 @@ function onMove(event) {
   ctx.moveTo(event.offsetX, event.offsetY);
 }
 
-function startPaint() {
+function strokePaint() {
   isPainting = true;
 }
 
@@ -34,13 +39,38 @@ function onColorChange(event) {
   ctx.fillStyle = event.target.value;
 }
 
+function onColorClick(event) {
+  const colorValue = event.target.dataset.color;
+  ctx.strokeStyle = colorValue;
+  ctx.fillStyle = colorValue;
+  color.value = colorValue;
+}
+
+function onModeClik() {
+  if (isFilling) {
+    isFilling = false;
+    modeBtn.innerText = "Draw";
+  } else {
+    isFilling = true;
+    modeBtn.innerText = "Fill";
+  }
+}
+
+function fillPaint() {
+  if (isFilling) {
+    ctx.fillRect(0, 0, 500, 500);
+  }
+}
+
 canvas.addEventListener("mousemove", onMove);
-canvas.addEventListener("mousedown", startPaint);
+canvas.addEventListener("mousedown", strokePaint);
 canvas.addEventListener("mouseup", stopPaint);
 canvas.addEventListener("mouseleave", stopPaint);
-
+canvas.addEventListener("click", fillPaint);
 lineWidth.addEventListener("change", onLineWidthChange);
 color.addEventListener("change", onColorChange);
+colorOptions.forEach((color) => color.addEventListener("click", onColorClick));
+modeBtn.addEventListener("click", onModeClik);
 
 // 색깔패턴놀이
 // const colors = [
